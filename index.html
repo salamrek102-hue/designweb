@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilangan Rasional - Futuristic Mode</title>
+    <style>
+        /* RESET & FONT */
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #050510;
+            color: #e0e0e0;
+            overflow: hidden; /* Hide default scrollbar */
+        }
+
+        /* FUTURISTIC THEME COLORS */
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #bc13fe;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --border-glow: 0 0 10px var(--neon-cyan);
+        }
+
+        /* LAYOUT CONTAINER */
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* VERTICAL MENU (SIDEBAR) */
+        .sidebar {
+            width: 80px;
+            background: rgba(0, 0, 0, 0.8);
+            border-right: 1px solid var(--neon-cyan);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            z-index: 100;
+            box-shadow: 5px 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .icon-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: var(--glass-bg);
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            font-size: 24px;
+            position: relative;
+        }
+
+        .icon-btn:hover, .icon-btn.active {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        /* Tooltip for Icons */
+        .icon-btn::after {
+            content: attr(data-title);
+            position: absolute;
+            left: 70px;
+            background: var(--neon-pink);
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .icon-btn:hover::after { opacity: 1; left: 60px; }
+
+        /* MAIN CONTENT AREA */
+        .main-content {
+            flex: 1;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+        }
+
+        /* SECTIONS */
+        section {
+            height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+            position: relative;
+        }
+
+        /* CONTENT STYLING */
+        h1, h2 {
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+        
+        h1 { font-size: 3rem; color: var(--neon-cyan); }
+        h2 { font-size: 2rem; color: var(--neon-pink); }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--neon-cyan);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+            text-align: center;
+        }
+
+        p, li {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .formula {
+            font-size: 1.5rem;
+            color: var(--neon-pink);
+            font-weight: bold;
+            padding: 10px;
+            border: 1px dashed var(--neon-pink);
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        /* INTERACTIVE ELEMENTS */
+        .btn-action {
+            padding: 10px 25px;
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-action:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .hidden-box {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(188, 19, 254, 0.2);
+            border-left: 3px solid var(--neon-pink);
+        }
+
+        /* QUIZ STYLES */
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+        }
+        .option-btn:hover { background: rgba(255,255,255,0.2); }
+        
+        /* BACKGROUND ANIMATION */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            perspective: 500px;
+            transform: rotateX(20deg) scale(1.2);
+            opacity: 0.3;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+
+    <div class="container">
+        <!-- 1. MENU UTAMA (VERTICAL) -->
+        <nav class="sidebar">
+            <a href="#home" class="icon-btn" data-title="Home">🏠</a>
+            <a href="#tujuan" class="icon-btn" data-title="Tujuan">🎯</a>
+            <a href="#materi" class="icon-btn" data-title="Materi">💾</a>
+            <a href="#contoh" class="icon-btn" data-title="Contoh">💡</a>
+            <a href="#latihan" class="icon-btn" data-title="Latihan">📝</a>
+            <a href="#referensi" class="icon-btn" data-title="Pustaka">📚</a>
+            <a href="#hakcipta" class="icon-btn" data-title="Info">🔒</a>
+        </nav>
+
+        <!-- KONTEN -->
+        <main class="main-content">
+            
+            <!-- HOME -->
+            <section id="home">
+                <div class="card">
+                    <h1>RATIONAL NUMBERS</h1>
+                    <p style="color:var(--neon-pink)">[ SYSTEM: ONLINE ]</p>
+                    <p>Selamat datang di modul pembelajaran masa depan.</p>
+                    <a href="#materi" class="btn-action">MULAI BELAJAR</a>
+                </div>
+            </section>
+
+            <!-- TUJUAN -->
+            <section id="tujuan">
+                <div class="card">
+                    <h2>🎯 TUJUAN PEMBELAJARAN</h2>
+                    <ul style="text-align: left; list-style: none;">
+                        <li>✅ Memahami definisi bilangan rasional.</li>
+                        <li>✅ Mengubah pecahan biasa ke desimal & sebaliknya.</li>
+                        <li>✅ Membandingkan dan mengurutkan bilangan rasional.</li>
+                        <li>✅ Melakukan operasi hitung sederhana.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- MATERI -->
+            <section id="materi">
+                <div class="card">
+                    <h2>💾 DATABASE MATERI</h2>
+                    <p>Bilangan Rasional adalah bilangan yang dapat dinyatakan dalam bentuk:</p>
+                    <div class="formula">a / b</div>
+                    <p>Di mana <b>a</b> dan <b>b</b> adalah bilangan bulat, dan <b>b ≠ 0</b>.</p>
+                    <hr style="border:0; border-top:1px solid gray; margin:10px 0;">
+                    <p>Mencakup: Bilangan bulat, pecahan biasa, pecahan campuran, dan desimal terbatas/berulang.</p>
+                </div>
+            </section>
+
+            <!-- CONTOH SOAL -->
+            <section id="contoh">
+                <div class="card">
+                    <h2>💡 CONTOH KASUS</h2>
+                    <p>Ubahlah pecahan <b>3/4</b> menjadi bilangan desimal.</p>
+                    <button class="btn-action" onclick="toggleAnswer('ans1')">LIHAT PEMBAHASAN</button>
+                    <div id="ans1" class="hidden-box">
+                        <p>Lakukan pembagian kurung: 3 ÷ 4</p>
+                        <p class="formula">3 ÷ 4 = 0.75</p>
+                        <p>Jadi, 3/4 adalah bilangan rasional desimal terbatas.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LATIHAN SOAL -->
+            <section id="latihan">
+                <div class="card">
+                    <h2>📝 SIMULASI UJIAN</h2>
+                    <p>Manakah di bawah ini yang BUKAN bilangan rasional?</p>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">A. 0.5</button>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">B. -2</button>
+                    <button class="option-btn" onclick="checkAnswer(this, true)">C. √2 (Akar 2)</button>
+                    <button class="option-btn" onclick="checkAnswer(this, false)">D. 2/3</button>
+                    <p id="quiz-feedback" style="margin-top:10px; font-weight:bold;"></p>
+                </div>
+            </section>
+
+            <!-- DAFTAR PUSTAKA -->
+            <section id="referensi">
+                <div class="card">
+                    <h2>📚 DATA REFERENSI</h2>
+                    <ul style="text-align: left; font-size: 0.9rem;">
+                        <li>Kementerian Pendidikan dan Kebudayaan. (2021). <i>Matematika Sekolah Menengah Pertama Kelas VII</i>.</li>
+                        <li>Wahyuni, T. (2022). <i>Logika Bilangan Modern</i>. Penerbit Erlangga.</li>
+                        <li>MathWorld.Wolfram.com - Rational Number Definition.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- HAK CIPTA -->
+            <section id="hakcipta">
+                <div class="card">
+                    <h2>🔒 SYSTEM INFO</h2>
+                    <p>Karya ini dibuat untuk tujuan edukasi.</p>
+                    <p>© 2024 FutureMath Learning Model.</p>
+                    <p style="font-size: 0.8rem; color: gray;">Designed by AI Assistant</p>
+                    <br>
+                    <a href="#home" class="btn-action">REBOOT SYSTEM (HOME)</a>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Script Sederhana untuk Interaksi
+        
+        function toggleAnswer(id) {
+            var x = document.getElementById(id);
+            if (x.style.display === "block") {
+                x.style.display = "none";
+            } else {
+                x.style.display = "block";
+            }
+        }
+
+        function checkAnswer(btn, isCorrect) {
+            let feedback = document.getElementById("quiz-feedback");
+            if (isCorrect) {
+                btn.style.background = "var(--neon-cyan)";
+                btn.style.color = "black";
+                feedback.innerHTML = "✅ AKSES DITERIMA: Jawaban Benar! √2 adalah irasional.";
+                feedback.style.color = "var(--neon-cyan)";
+            } else {
+                btn.style.background = "red";
+                feedback.innerHTML = "❌ AKSES DITOLAK: Jawaban Salah. Coba lagi.";
+                feedback.style.color = "red";
+            }
+        }
+
+        // Highlight Menu on Scroll
+        const sections = document.querySelectorAll("section");
+        const navLi = document.querySelectorAll(".sidebar a");
+
+        document.querySelector(".main-content").addEventListener("scroll", () => {
+            let current = "";
+            sections.forEach((section) => {
+                const sectionTop = section.offsetTop;
+                // Adjust offset logic for container scroll
+                if (section.getBoundingClientRect().top >= -200 && section.getBoundingClientRect().top <= 300) {
+                    current = section.getAttribute("id");
+                }
+            });
+
+            navLi.forEach((a) => {
+                a.classList.remove("active");
+                if (a.getAttribute("href").includes(current)) {
+                    a.classList.add("active");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
